@@ -1,0 +1,6 @@
+{
+  "name": "harnessdsh-mcp-release",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.7.0"
+}

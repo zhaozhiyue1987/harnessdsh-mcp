@@ -1,0 +1,50 @@
+#!/usr/bin/env node
+
+import { spawnSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
+
+const PACKAGE_SPEC = fileURLToPath(new URL('../', import.meta.url))
+const DEFAULT_PROFILE = 'headless'
+
+function usage() {
+  process.stderr.write('usage: dsh-mcp <deploy|run> [--profile <name>] [dsh arguments...]\n')
+}
+
+function profileFrom(args) {
+  let profile = DEFAULT_PROFILE
+  const remaining = []
+  for (let index = 0; index < args.length; index += 1) {
+    const value = args[index]
+    if (value !== '--profile') {
+      remaining.push(value)
+      continue
+    }
+    const next = args[index + 1]
+    if (next === undefined || next.startsWith('-')) {
+      process.stderr.write('dsh-mcp: --profile requires a profile name\n')
+      return undefined
+    }
+    profile = next
+    index += 1
+  }
+  return { profile, remaining }
+}
+
+function invoke(args) {
+  const result = spawnSync('dsh', args, { stdio: 'inherit' })
+  if (result.error !== undefined) {
+    process.stderr.write(`dsh-mcp: failed to start dsh: ${result.error.message}\n`)
+    return 1
+  }
+  return result.status ?? 1
+}
+
+const [command = 'run', ...args] = process.argv.slice(2)
+const parsed = profileFrom(args)
+if (parsed === undefined) process.exitCode = 1
+else if (command === 'deploy') process.exitCode = invoke(['plugin', '--profile', parsed.profile, 'add', PACKAGE_SPEC])
+else if (command === 'run') process.exitCode = invoke(['--profile', parsed.profile, ...parsed.remaining])
+else {
+  usage()
+  process.exitCode = 1
+}

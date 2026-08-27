@@ -1,0 +1,5 @@
+packages:
+  - packages/bundle/mcp-dsh
+  - packages/mcp/mcp-manager
+  - packages/mcp/mcp-client
+  - vendor/schemastery
