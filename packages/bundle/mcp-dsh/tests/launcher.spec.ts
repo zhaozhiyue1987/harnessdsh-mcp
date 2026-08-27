@@ -7,6 +7,9 @@ import { spawnSync } from 'node:child_process'
 
 const roots: string[] = []
 const launcher = fileURLToPath(new URL('../bin/dsh-mcp.mjs', import.meta.url))
+const mcpClient = fileURLToPath(new URL('../../../mcp/mcp-client/', import.meta.url))
+const mcpManager = fileURLToPath(new URL('../../../mcp/mcp-manager/', import.meta.url))
+const bundle = fileURLToPath(new URL('../', import.meta.url))
 
 afterEach(() => {
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true })
@@ -17,7 +20,7 @@ function run(args: string[]) {
   roots.push(root)
   const record = join(root, 'record.txt')
   const dsh = join(root, 'dsh')
-  writeFileSync(dsh, `#!/bin/sh\nprintf '%s\\n' "$@" > "${record}"\n`)
+  writeFileSync(dsh, `#!/bin/sh\nprintf '%s\\n' "$@" >> "${record}"\nprintf '\\n' >> "${record}"\n`)
   chmodSync(dsh, 0o755)
   const result = spawnSync(process.execPath, [launcher, ...args], {
     encoding: 'utf8',
@@ -30,7 +33,11 @@ describe.skipIf(process.platform === 'win32')('dsh-mcp launcher', () => {
   it('installs its bundle into the selected profile', () => {
     const { result, record } = run(['deploy', '--profile', 'mcp'])
     expect(result.status).toBe(0)
-    expect(readFileSync(record, 'utf8')).toBe('plugin\n--profile\nmcp\nadd\n@deepseek-ai/dsh-mcp\n')
+    expect(readFileSync(record, 'utf8')).toBe([
+      'plugin', '--profile', 'mcp', 'add', mcpClient, '',
+      'plugin', '--profile', 'mcp', 'add', mcpManager, '',
+      'plugin', '--profile', 'mcp', 'add', bundle, '',
+    ].join('\n'))
   })
 
   it('starts a profile without mutating its dependency manifest', () => {

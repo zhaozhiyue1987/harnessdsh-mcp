@@ -4,6 +4,10 @@ import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
 const PACKAGE_SPEC = fileURLToPath(new URL('../', import.meta.url))
+const DEPENDENCY_SPECS = [
+  fileURLToPath(new URL('../../../mcp/mcp-client/', import.meta.url)),
+  fileURLToPath(new URL('../../../mcp/mcp-manager/', import.meta.url)),
+]
 const DEFAULT_PROFILE = 'headless'
 
 function usage() {
@@ -39,10 +43,18 @@ function invoke(args) {
   return result.status ?? 1
 }
 
+function deploy(profile) {
+  for (const packageSpec of [...DEPENDENCY_SPECS, PACKAGE_SPEC]) {
+    const status = invoke(['plugin', '--profile', profile, 'add', packageSpec])
+    if (status !== 0) return status
+  }
+  return 0
+}
+
 const [command = 'run', ...args] = process.argv.slice(2)
 const parsed = profileFrom(args)
 if (parsed === undefined) process.exitCode = 1
-else if (command === 'deploy') process.exitCode = invoke(['plugin', '--profile', parsed.profile, 'add', PACKAGE_SPEC])
+else if (command === 'deploy') process.exitCode = deploy(parsed.profile)
 else if (command === 'run') process.exitCode = invoke(['--profile', parsed.profile, ...parsed.remaining])
 else {
   usage()

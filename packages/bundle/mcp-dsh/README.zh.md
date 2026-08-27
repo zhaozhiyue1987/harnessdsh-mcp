@@ -8,11 +8,11 @@ web-app 捆绑包已直接挂载 `mcp-manager`；本层适用于需要 MCP 服�
 
 ## 部署并运行
 
-该包发布 `dsh-mcp` 可执行程序，要求 Harness 安装的 `dsh` 命令位于 `PATH` 中。`deploy` 将此 bundle 安装到一个 profile 并作为该 profile 的一层；`run` 启动该 profile。两个命令默认使用内置的 `headless` profile，`--profile` 可选择其他 headless 或自定义 profile。
+该包发布 `dsh-mcp` 可执行程序，要求 Harness 安装的 `dsh` 命令位于 `PATH` 中。`deploy` 按依赖顺序将本地 `mcp-client`、`mcp-manager` 和 bundle 包安装到 profile；`run` 启动该 profile。两个命令默认使用内置的 `headless` profile，`--profile` 可选择其他 headless 或自定义 profile。由于这些开发预览包尚未发布到 npm，必须安装本地依赖包。
 
 ```sh
-npx --yes @deepseek-ai/dsh-mcp deploy --profile headless
-npx --yes @deepseek-ai/dsh-mcp run --profile headless "List the configured MCP servers."
+node packages/bundle/mcp-dsh/bin/dsh-mcp.mjs deploy --profile headless
+node packages/bundle/mcp-dsh/bin/dsh-mcp.mjs run --profile headless "List the configured MCP servers."
 ```
 
 `deploy` 可重复执行。不要将此 bundle 部署到 `web` profile：web-app bundle 已拥有 `mcp-manager` 条目。通过 Web 设置 UI、Typert Remote API 或 `settings.yaml` 配置 server；启动器不会保存凭据或 server 定义。

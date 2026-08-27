@@ -8,11 +8,11 @@ The web-app bundle already mounts `mcp-manager` directly; this layer is for head
 
 ## Deploy and run
 
-The package publishes a `dsh-mcp` executable for a Harness installation whose `dsh` command is on `PATH`. `deploy` installs this bundle into a profile and makes it a profile layer; `run` starts that profile. Both commands default to the shipped `headless` profile, and `--profile` selects another headless or custom profile.
+The package publishes a `dsh-mcp` executable for a Harness installation whose `dsh` command is on `PATH`. `deploy` installs the local `mcp-client`, `mcp-manager`, and bundle packages into a profile in dependency order; `run` starts that profile. Both commands default to the shipped `headless` profile, and `--profile` selects another headless or custom profile. Installing the local dependency packages is required because these development-preview package names are not yet available from npm.
 
 ```sh
-npx --yes @deepseek-ai/dsh-mcp deploy --profile headless
-npx --yes @deepseek-ai/dsh-mcp run --profile headless "List the configured MCP servers."
+node packages/bundle/mcp-dsh/bin/dsh-mcp.mjs deploy --profile headless
+node packages/bundle/mcp-dsh/bin/dsh-mcp.mjs run --profile headless "List the configured MCP servers."
 ```
 
 `deploy` is idempotent. Do not deploy this bundle into the `web` profile: the web-app bundle already owns the `mcp-manager` row. Configure servers through the Web settings UI, the Typert Remote API, or `settings.yaml`; the launcher does not store credentials or server definitions.

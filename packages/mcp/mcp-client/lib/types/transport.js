@@ -16,7 +16,12 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 import { scrubbedParentEnv } from '@deepseek-ai/dsh-subprocess';
-import { getTraceContext, traceContextHeaders } from '@deepseek-ai/dsh-llm';
+import * as dshLlm from '@deepseek-ai/dsh-llm';
+// Published dsh-llm releases before the Trace helper export remain valid
+// hosts. Namespace access retains propagation when helpers exist and uses the
+// documented passthrough when they do not.
+const getTraceContext = typeof dshLlm.getTraceContext === 'function' ? dshLlm.getTraceContext : () => undefined;
+const traceContextHeaders = typeof dshLlm.traceContextHeaders === 'function' ? dshLlm.traceContextHeaders : () => ({});
 /**
  * The subprocess seam's scrubbed parent env (credential-shaped and stale
  * `DSH_*` names dropped), plus the spec's explicit env. The MCP SDK owns the
