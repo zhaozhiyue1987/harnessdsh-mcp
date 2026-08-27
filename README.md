@@ -15,6 +15,8 @@ node packages/bundle/mcp-dsh/bin/dsh-mcp.mjs run --profile headless "List MCP se
 
 `pnpm install` is a repository integrity check; deployment uses the committed artifacts and does not require a package build. The workspace keeps peer packages host-owned, so it never tries to fetch unpublished Harness packages. `deploy` uses the bundle path inside this repository, so it does not depend on an unpublished npm package. The launcher uses `dsh` from `PATH`, or the executable named by `DSH_BIN`; use the latter for a source checkout. Use `--profile web` to add the **Settings → MCP 服务** page and conversation dock to a running Web Harness. Configure MCP servers through that UI, the Typert Remote API, or `settings.yaml`; the launcher stores no credentials.
 
+For the exact `$DSH_HOME/settings.yaml` catalog format, stdio/HTTP/SSE examples, session binding, and secret-handling rules, see [Persistent MCP configuration](packages/bundle/mcp-dsh/README.md#persistent-mcp-configuration).
+
 ## Contents
 
 - `packages/bundle/mcp-dsh`: profile patch, `dsh-mcp` launcher, and built artifacts.
