@@ -1,0 +1,42 @@
+packages/mcp/mcp-manager/package.json
+  s_038158f77f138e::t_844f1cd02a0466 48
+  s_038158f77f138e::t_f77cd9b90782d3 47,49-53,56,60,62-66
+  s_038158f77f138e::t_2c5af7211761f0 61
+packages/mcp/mcp-client/package.json
+  s_038158f77f138e::t_3abdd440df1249 35-41,45,49-54,57
+packages/mcp/mcp-client/lib/types/transport.js
+  s_038158f77f138e::t_147ee61e999517 19-23
+  s_038158f77f138e::t_4a188d8ec3da19 24
+packages/mcp/mcp-client/lib/index.js
+  s_038158f77f138e::t_c91415a5ea72bf 9-13
+  s_038158f77f138e::t_d94aca5af1d99d 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.2",
+  "base_commit_sha": "883e0a741e48915e32d2fd257d416db58fd00788",
+  "prompts": {},
+  "sessions": {
+    "s_038158f77f138e": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a8fdeeaf27ee3614f74236f",
+        "model": "deepseek-v4-flash-0731"
+      },
+      "human_author": "zhaozhiyue1987 <128685448+zhaozhiyue1987@users.noreply.github.com>",
+      "custom_attributes": {
+        "operation_id": "6a8fec90f27ee3614f742504",
+        "runtime_client": "trae-tob-git-ai",
+        "edit_kind": "file_edit",
+        "external_session_id": "6a8fdeeaf27ee3614f74236f",
+        "client_type": "ide",
+        "tool_id": "icube:applyChatSnapshotPatch",
+        "dedupe_key": "6a8fdeeaf27ee3614f74236f:6a8fec90f27ee3614f742504:afterEdit:bfc770d1",
+        "source_scene": "agent",
+        "tool_use_id": "6a8fec90f27ee3614f742504",
+        "session_id": "6a8fdeeaf27ee3614f74236f",
+        "tool_type": "builtin"
+      }
+    }
+  }
+}
