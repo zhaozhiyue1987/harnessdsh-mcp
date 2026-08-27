@@ -7,6 +7,7 @@ import { spawnSync } from 'node:child_process'
 
 const roots: string[] = []
 const launcher = fileURLToPath(new URL('../bin/dsh-mcp.mjs', import.meta.url))
+const uiMcp = fileURLToPath(new URL('../../../client/ui-mcp/', import.meta.url))
 const mcpClient = fileURLToPath(new URL('../../../mcp/mcp-client/', import.meta.url))
 const mcpManager = fileURLToPath(new URL('../../../mcp/mcp-manager/', import.meta.url))
 const bundle = fileURLToPath(new URL('../', import.meta.url))
@@ -34,6 +35,7 @@ describe.skipIf(process.platform === 'win32')('dsh-mcp launcher', () => {
     const { result, record } = run(['deploy', '--profile', 'mcp'])
     expect(result.status).toBe(0)
     expect(readFileSync(record, 'utf8')).toBe([
+      'plugin', '--profile', 'mcp', 'add', uiMcp, '',
       'plugin', '--profile', 'mcp', 'add', mcpClient, '',
       'plugin', '--profile', 'mcp', 'add', mcpManager, '',
       'plugin', '--profile', 'mcp', 'add', bundle, '',

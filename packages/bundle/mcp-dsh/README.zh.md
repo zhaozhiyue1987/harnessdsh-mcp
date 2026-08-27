@@ -2,20 +2,20 @@
 
 [English](README.md) | 中文
 
-dsh MCP 捆绑包。[`cordis.patch.yml`](cordis.patch.yml) 在插件树中插入托管 MCP 服务器目录（`mcp-manager`），在 [`dsh-base`](../base/README.md) 之上启用持久化服务器配置和会话级绑定/解绑。作为 profile 层使用：`dsh --profile headless,mcp`。
+dsh MCP 捆绑包。[`cordis.patch.yml`](cordis.patch.yml) 在插件树中插入托管 MCP 服务器目录（`mcp-manager`）及其浏览器侧配套插件（`dsh-client-ui-mcp`）。Web profile 会显示**设置 → MCP 服务**和会话级 MCP 工具坞；headless profile 仍保留管理 API 而不渲染浏览器界面。
 
 web-app 捆绑包已直接挂载 `mcp-manager`；本层适用于需要 MCP 服务器管理但不包含完整浏览器界面的 headless 和自定义 profile。
 
 ## 部署并运行
 
-该包发布 `dsh-mcp` 可执行程序，要求 Harness 安装的 `dsh` 命令位于 `PATH` 中。`deploy` 按依赖顺序将本地 `mcp-client`、`mcp-manager` 和 bundle 包安装到 profile；`run` 启动该 profile。两个命令默认使用内置的 `headless` profile，`--profile` 可选择其他 headless 或自定义 profile。由于这些开发预览包尚未发布到 npm，必须安装本地依赖包。
+该包发布 `dsh-mcp` 可执行程序，要求 Harness 安装的 `dsh` 命令位于 `PATH` 中。`deploy` 按依赖顺序将本地浏览器 UI、`mcp-client`、`mcp-manager` 和 bundle 包安装到 profile；`run` 启动该 profile。两个命令默认使用内置的 `headless` profile，`--profile` 可选择其他 profile。由于这些开发预览包尚未发布到 npm，必须安装本地依赖包。
 
 ```sh
 node packages/bundle/mcp-dsh/bin/dsh-mcp.mjs deploy --profile headless
 node packages/bundle/mcp-dsh/bin/dsh-mcp.mjs run --profile headless "List the configured MCP servers."
 ```
 
-`deploy` 可重复执行。不要将此 bundle 部署到 `web` profile：web-app bundle 已拥有 `mcp-manager` 条目。通过 Web 设置 UI、Typert Remote API 或 `settings.yaml` 配置 server；启动器不会保存凭据或 server 定义。
+`deploy` 可重复执行。部署到 `web` profile 可显示 MCP 服务器目录和绑定工具坞；部署到 `headless` 则用于 API 或 YAML 驱动的使用方式。通过 Web 设置 UI、Typert Remote API 或 `settings.yaml` 配置 server；启动器不会保存凭据或 server 定义。
 
 ## 模型体验
 
