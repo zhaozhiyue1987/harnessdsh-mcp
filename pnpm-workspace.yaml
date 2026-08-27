@@ -1,8 +1,9 @@
+autoInstallPeers: false
+
 packages:
   - packages/client/ui-mcp
   - packages/bundle/mcp-dsh
   - packages/mcp/mcp-manager
   - packages/mcp/mcp-client
-  - packages/tools
   - packages/telemetry/telemetry
   - packages/runtime-diagnostics/invariants

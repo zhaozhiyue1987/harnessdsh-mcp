@@ -8,10 +8,11 @@ The web-app bundle already mounts `mcp-manager` directly; this layer is for head
 
 ## Deploy and run
 
-The package publishes a `dsh-mcp` executable for a Harness installation whose `dsh` command is on `PATH`. `deploy` installs the local browser UI, `mcp-client`, `mcp-manager`, and bundle packages into a profile in dependency order; `run` starts that profile. Both commands default to the shipped `headless` profile, and `--profile` selects another profile. Installing the local dependency packages is required because these development-preview package names are not yet available from npm.
+The package publishes a `dsh-mcp` executable for a Harness installation. It resolves `dsh` from `PATH`, or from the executable named by `DSH_BIN`; source checkouts should set `DSH_BIN` to their built `node_modules/.bin/dsh`. `deploy` installs the local browser UI, `mcp-client`, `mcp-manager`, and bundle packages into a profile in dependency order; `run` starts that profile. Both commands default to the shipped `headless` profile, and `--profile` selects another profile.
 
 ```sh
-node packages/bundle/mcp-dsh/bin/dsh-mcp.mjs deploy --profile headless
+DSH_BIN=/absolute/path/to/deepseek-harness/node_modules/.bin/dsh \
+  node packages/bundle/mcp-dsh/bin/dsh-mcp.mjs deploy --profile headless
 node packages/bundle/mcp-dsh/bin/dsh-mcp.mjs run --profile headless "List the configured MCP servers."
 ```
 

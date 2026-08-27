@@ -8,11 +8,12 @@
 git clone https://github.com/zhaozhiyue1987/harnessdsh-mcp.git
 cd harnessdsh-mcp
 pnpm install
-node packages/bundle/mcp-dsh/bin/dsh-mcp.mjs deploy --profile headless
+DSH_BIN=/绝对路径/deepseek-harness/node_modules/.bin/dsh \
+  node packages/bundle/mcp-dsh/bin/dsh-mcp.mjs deploy --profile headless
 node packages/bundle/mcp-dsh/bin/dsh-mcp.mjs run --profile headless "List MCP servers."
 ```
 
-`deploy` 使用仓库内的 bundle 路径，因此不依赖尚未发布的 npm 包。请通过 Web 设置 UI、Typert Remote API 或 `settings.yaml` 配置 MCP server；启动器不保存凭据。不要将此 bundle 部署到 `web` profile，因为 web-app 会直接挂载 `mcp-manager`。
+`pnpm install` 用于校验仓库依赖；部署直接使用已提交的构建产物，不需要重新构建。workspace 会让 peer 依赖由宿主 Harness 提供，不会尝试下载未发布的 Harness 包。`deploy` 使用仓库内的 bundle 路径，因此不依赖尚未发布的 npm 包。启动器默认从 `PATH` 查找 `dsh`，也可通过 `DSH_BIN` 指定源码构建出的 CLI。请通过 Web 设置 UI、Typert Remote API 或 `settings.yaml` 配置 MCP server；启动器不保存凭据。使用 `--profile web` 会安装 MCP 管理界面。
 
 ## 目录
 

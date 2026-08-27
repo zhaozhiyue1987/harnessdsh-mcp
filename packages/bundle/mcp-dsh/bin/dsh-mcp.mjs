@@ -10,6 +10,7 @@ const DEPENDENCY_SPECS = [
   fileURLToPath(new URL('../../../mcp/mcp-manager/', import.meta.url)),
 ]
 const DEFAULT_PROFILE = 'headless'
+const DSH_BIN = process.env.DSH_BIN || 'dsh'
 
 function usage() {
   process.stderr.write('usage: dsh-mcp <deploy|run> [--profile <name>] [dsh arguments...]\n')
@@ -36,9 +37,9 @@ function profileFrom(args) {
 }
 
 function invoke(args) {
-  const result = spawnSync('dsh', args, { stdio: 'inherit' })
+  const result = spawnSync(DSH_BIN, args, { stdio: 'inherit' })
   if (result.error !== undefined) {
-    process.stderr.write(`dsh-mcp: failed to start dsh: ${result.error.message}\n`)
+    process.stderr.write(`dsh-mcp: failed to start ${DSH_BIN}: ${result.error.message}\n`)
     return 1
   }
   return result.status ?? 1
