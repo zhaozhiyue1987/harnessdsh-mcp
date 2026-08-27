@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawnSync } from 'node:child_process'
+import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 
 const PACKAGE_SPEC = fileURLToPath(new URL('../', import.meta.url))
@@ -11,6 +12,10 @@ const DEPENDENCY_SPECS = [
 ]
 const DEFAULT_PROFILE = 'headless'
 const DSH_BIN = process.env.DSH_BIN || 'dsh'
+const REQUIRED_SOURCE_DEPENDENCIES = [
+  [createRequire(new URL('../../../mcp/mcp-manager/package.json', import.meta.url)), 'zod'],
+  [createRequire(new URL('../../../mcp/mcp-client/package.json', import.meta.url)), '@modelcontextprotocol/sdk/package.json'],
+]
 
 function usage() {
   process.stderr.write('usage: dsh-mcp <deploy|run> [--profile <name>] [dsh arguments...]\n')
@@ -45,7 +50,27 @@ function invoke(args) {
   return result.status ?? 1
 }
 
+/** Ensure the linked source packages can resolve their non-host dependencies. */
+function sourceDependenciesReady() {
+  const missing = REQUIRED_SOURCE_DEPENDENCIES
+    .filter(([require, specifier]) => {
+      try {
+        require.resolve(specifier)
+        return false
+      } catch {
+        return true
+      }
+    })
+    .map(([, specifier]) => specifier)
+  if (missing.length === 0) return true
+  process.stderr.write(
+    `dsh-mcp: source dependencies are unavailable (${missing.join(', ')}); run pnpm install successfully in this repository before deploy\n`,
+  )
+  return false
+}
+
 function deploy(profile) {
+  if (!sourceDependenciesReady()) return 1
   for (const packageSpec of [...DEPENDENCY_SPECS, PACKAGE_SPEC]) {
     const status = invoke(['plugin', '--profile', profile, 'add', packageSpec])
     if (status !== 0) return status
