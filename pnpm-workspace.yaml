@@ -2,6 +2,7 @@ autoInstallPeers: false
 
 packages:
   - packages/client/ui-mcp
+  - packages/client/mcp-remote
   - packages/bundle/mcp-dsh
   - packages/mcp/mcp-manager
   - packages/mcp/mcp-client

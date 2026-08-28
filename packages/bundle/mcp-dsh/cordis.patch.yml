@@ -12,6 +12,11 @@
     - id: mcp-manager
       name: '@deepseek-ai/dsh-mcp-manager'
 
+    # Browser-side Remote contribution. It mounts mcpManager before the UI
+    # requests it, without requiring a host-specific api-remotes rebuild.
+    - id: mcp-remote
+      name: '@deepseek-ai/dsh-client-mcp-remote'
+
     # Browser-side MCP catalog and per-session bind dock. It stays inert in
     # headless profiles, and Web profiles serve the declared client module.
     - id: ui-mcp

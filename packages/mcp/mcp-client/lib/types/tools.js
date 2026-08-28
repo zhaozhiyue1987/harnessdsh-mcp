@@ -14,7 +14,6 @@
 import { createHash } from 'node:crypto';
 import { ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { assertSupportedJsonSchema } from '@deepseek-ai/dsh-tools';
 /**
  * DeepSeek function-name contract: at most 64 characters. Wire-protocol
  * constant, not configuration.
@@ -174,17 +173,30 @@ export async function syncTools(client, ctx, opts, previous, onSynced = () => { 
     }
     return disposers;
 }
-/** Keep a supported advertised schema; unsupported MCP vocabulary falls back to JsonValue. */
+/** Keep a JSON-serializable advertised schema without a runtime host-package import. */
 function supportedOutputSchema(candidate) {
-    if (candidate === undefined)
-        return undefined;
-    try {
-        assertSupportedJsonSchema(candidate);
-        return candidate;
-    }
-    catch {
-        return undefined;
-    }
+    return isJsonValue(candidate) ? candidate : void 0;
+}
+/** MCP schemas arrive as untrusted transport data; retain only lossless JSON. */
+function isJsonValue(value) {
+    const seen = /* @__PURE__ */ new Set();
+    const visit = (current) => {
+        if (current === null || typeof current === "string" || typeof current === "boolean") return true;
+        if (typeof current === "number") return Number.isFinite(current);
+        if (typeof current !== "object") return false;
+        if (seen.has(current)) return false;
+        seen.add(current);
+        try {
+            if (Array.isArray(current)) return current.every(visit);
+            const prototype = Object.getPrototypeOf(current);
+            return (prototype === Object.prototype || prototype === null) && Object.values(current).every(visit);
+        } catch {
+            return false;
+        } finally {
+            seen.delete(current);
+        }
+    };
+    return visit(value);
 }
 /** Build the canonical result schema and existing Native text projection. */
 function createOutput(rawName, structuredSchema) {

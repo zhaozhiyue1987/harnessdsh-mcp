@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 
 const PACKAGE_SPEC = fileURLToPath(new URL('../', import.meta.url))
 const DEPENDENCY_SPECS = [
+  fileURLToPath(new URL('../../../client/mcp-remote/', import.meta.url)),
   fileURLToPath(new URL('../../../client/ui-mcp/', import.meta.url)),
   fileURLToPath(new URL('../../../mcp/mcp-client/', import.meta.url)),
   fileURLToPath(new URL('../../../mcp/mcp-manager/', import.meta.url)),

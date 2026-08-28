@@ -17,9 +17,7 @@ import type { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { ListToolsResultSchema } from '@modelcontextprotocol/sdk/types.js'
 import { z } from 'zod'
 import type { Context } from '@deepseek-ai/cordis'
-import type { ToolDefinition, ToolExecution } from '@deepseek-ai/dsh-tools'
-import { assertSupportedJsonSchema } from '@deepseek-ai/dsh-tools'
-import type { JsonSchemaNode, JsonValue } from '@deepseek-ai/dsh-tools'
+import type { ToolDefinition, ToolExecution, JsonSchemaNode, JsonValue } from '@deepseek-ai/dsh-tools'
 
 /** Resolved options relevant to tool bridging. */
 export interface ToolBridgeOptions {
@@ -263,15 +261,36 @@ interface McpContentBlock {
   mimeType?: string
 }
 
-/** Keep a supported advertised schema; unsupported MCP vocabulary falls back to JsonValue. */
+/** Keep a JSON-serializable advertised schema without a runtime host-package import. */
 function supportedOutputSchema(candidate: unknown): JsonSchemaNode | undefined {
-  if (candidate === undefined) return undefined
-  try {
-    assertSupportedJsonSchema(candidate)
-    return candidate
-  } catch {
-    return undefined
+  return isJsonValue(candidate) ? candidate : undefined
+}
+
+/**
+ * MCP schemas arrive as untrusted transport data. This intentionally checks the
+ * lossless JSON boundary only: the ToolRuntime owns its schema subset and will
+ * fall back to JsonValue for unsupported schema vocabulary.
+ */
+function isJsonValue(value: unknown): value is JsonValue {
+  const seen = new Set<object>()
+  const visit = (current: unknown): boolean => {
+    if (current === null || typeof current === 'string' || typeof current === 'boolean') return true
+    if (typeof current === 'number') return Number.isFinite(current)
+    if (typeof current !== 'object') return false
+    if (seen.has(current)) return false
+    seen.add(current)
+    try {
+      if (Array.isArray(current)) return current.every(visit)
+      const prototype = Object.getPrototypeOf(current)
+      return (prototype === Object.prototype || prototype === null)
+        && Object.values(current).every(visit)
+    } catch {
+      return false
+    } finally {
+      seen.delete(current)
+    }
   }
+  return visit(value)
 }
 
 /** Build the canonical result schema and existing Native text projection. */
